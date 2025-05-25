@@ -16,21 +16,23 @@ typedef enum {
     NODE_KEYWORD,
 } ASTNodeType;
 
+struct ASTNode;
+
 typedef struct {
     int value;
 } ASTConst;
 typedef struct {
-    ASTConst *const_expression;
+    ASTNode *const_expression;
 } ASTExp;
 typedef struct {
-    ASTExp *expression;
+    ASTNode *expression;
 } ASTReturn;
 typedef struct {
     char name[MAX_LEXEME_LENGTH];
-    ASTReturn *statement;
+    ASTNode *statement;
 } ASTFuncDeclare;
 typedef struct {
-    ASTFuncDeclare *func_declare;
+    ASTNode *func_declare;
 } ASTProg;
 
 typedef struct {
@@ -41,14 +43,15 @@ typedef struct {
         ASTReturn returnNode;
         ASTFuncDeclare funcDeclareNode;
         ASTProg progNode;
-    };
+    } data;
     
 } ASTNode;
 
-ASTNode *createConstNode(int value); 
-ASTNode *createReturnNode();
-ASTNode *createFuncDeclareNode();
-ASTNode *createProgNode();
+ASTNode *createConstNode(int value);
+ASTNode *createExpNode(ASTNode *expression);
+ASTNode *createReturnNode(ASTNode *expression);
+ASTNode *createFuncDeclareNode(const char *name, ASTNode *statement);
+ASTNode *createProgNode(ASTNode *funcDeclare);
 
 void freeAST(ASTNode *node);
 void printAST(ASTNode *node, int level);

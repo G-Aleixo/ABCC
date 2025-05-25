@@ -5,6 +5,7 @@
 #include "tokens.h"
 #include "lexer.h"
 #include "parser.h"
+#include "ast.h"
 
 void printToken(Token token) {
     printf("Lexeme: %-10s Type: %d\n", token.lexeme, token.type);
@@ -22,7 +23,10 @@ int main() {
     TokenArray tokenArray;
     tokenize(file, &tokenArray);
 
-    parse(&tokenArray);
+    ASTNode *program = parse(&tokenArray);
+
+    printAST(program, 0);
+
 
     return 0;
 }

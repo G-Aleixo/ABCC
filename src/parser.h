@@ -6,4 +6,6 @@
 
 ASTNode *parse(TokenArray *tokenArray);
 
+ASTNode *parseExpression(TokenArray *tokenArray, int pos);
+
 #endif

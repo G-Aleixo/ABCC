@@ -30,7 +30,11 @@ ASTNode *parseStatement(TokenArray *tokenArray, int pos) {
 
     ASTNode *expr = parseExpression(tokenArray, pos++);
 
-    ASTNode *program = createProgNode(createFuncDeclareNode("main", expr));
+    ASTNode *return_node = createReturnNode(expr);
+
+    ASTNode *program = createProgNode(createFuncDeclareNode("main", return_node));
+
+    return program;
 }
 
 ASTNode *parseExpression(TokenArray *tokenArray, int pos) {
@@ -38,8 +42,7 @@ ASTNode *parseExpression(TokenArray *tokenArray, int pos) {
     if ((tokenArray->tokens)[pos].type != NUMBER) {
         fail(1);
     }
+    ASTNode *expr = createExpNode(createConstNode(atoi((tokenArray->tokens)[pos].lexeme)));
 
-    ASTNode *node = {createConstNode(itoa((tokenArray->tokens)[pos].lexeme))};
-
-    return node;
+    return expr;
 }
