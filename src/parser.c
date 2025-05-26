@@ -3,46 +3,119 @@
 #include <string.h>
 
 #include "tokens.h"
-#include "lexer.h"
-#include "parser.h"
 #include "ast.h"
 
-void fail(int code) {
-    puts("Failed to parse!");
-    exit(code);
+int arrayIndex = 0;
+
+Token *next(TokenArray *tokenArray) {
+    if (arrayIndex < tokenArray->size) {
+        return &tokenArray->tokens[arrayIndex++];
+    }
+    return NULL; // No more tokens
+}
+
+Token *peekToken(TokenArray *tokenArray) {
+    if (arrayIndex < tokenArray->size) {
+        return &tokenArray->tokens[arrayIndex];
+    }
+    return NULL; // No more tokens
 }
 
 ASTNode *parse(TokenArray *tokenArray) {
-    puts("Starting to parse tokens...");
-
-    for (int i = 0; i < tokenArray->count; i++) {
-        printf("Lexeme: %-10s Type: %d\n", tokenArray->tokens[i].lexeme, tokenArray->tokens[i].type);
-    }
+    Token *token;
 }
 
-ASTNode *parseStatement(TokenArray *tokenArray, int pos) {
-    if ((tokenArray->tokens)[pos++].type != KEYWORD) {
-        fail(1);
+ASTNode *parse_statement(TokenArray *tokenArray) {
+    Token *token = next(tokenArray);
+    if (token == NULL) {
+        return NULL; // No more tokens
+    };
+
+    ASTNode *node = NULL;
+
+    switch (token->type) {
+        case KEYWORD:
+            if (strcmp(token->lexeme, "return") != 0) {
+                fprintf(stderr, "Expected 'return' keyword, got '%s'\n", token->lexeme);
+                exit(EXIT_FAILURE);
+            }
+            Token *nextToken = peekToken(tokenArray);
+            if (nextToken != NULL && nextToken->type == NUMBER) {
+                next(tokenArray);
+                ASTNode *expression = createExpNode(createConstNode(nextToken->lexeme, CONST_NUMBER));
+                node = createReturnNode(expression);
+            }
+            break;
+        
+        default:
+            fprintf(stderr, "Unexpected token type: %d\n", token->type);
+            exit(EXIT_FAILURE);
     }
-    if (strcmp((tokenArray->tokens)[pos++].lexeme, "return") != 0) {
-        fail(1);
-    }
 
-    ASTNode *expr = parseExpression(tokenArray, pos++);
-
-    ASTNode *return_node = createReturnNode(expr);
-
-    ASTNode *program = createProgNode(createFuncDeclareNode("main", return_node));
-
-    return program;
+    return node;
 }
 
-ASTNode *parseExpression(TokenArray *tokenArray, int pos) {
-    //TODO: add more rules
-    if ((tokenArray->tokens)[pos].type != NUMBER) {
-        fail(1);
-    }
-    ASTNode *expr = createExpNode(createConstNode(atoi((tokenArray->tokens)[pos].lexeme)));
+ASTNode *parse_func(TokenArray *tokenArray) {
+    Token *nextToken;
 
-    return expr;
+    Token *token = next(tokenArray);
+    if (token == NULL) {
+        return NULL; // Not a function declaration
+    }
+
+    if (token->type != KEYWORD) {
+        fprintf(stderr, "Expected function declaration keyword, got '%s'\n", token->lexeme);
+        exit(EXIT_FAILURE);
+    }
+
+    if (strcmp(token->lexeme, "int") != 0) {
+        fprintf(stderr, "Expected 'int' keyword, got '%s'\n", token->lexeme);
+        exit(EXIT_FAILURE);
+    }
+
+    if (peekToken(tokenArray) == NULL || peekToken(tokenArray)->type != IDENTIFIER) {
+        fprintf(stderr, "Expected function name after 'int', got '%s'\n", token->lexeme);
+        exit(EXIT_FAILURE);
+    }
+
+    Token *funcNameToken = next(tokenArray);
+
+    ASTNode *funcNode = createFuncDeclareNode(funcNameToken->lexeme, NULL);
+
+    nextToken = next(tokenArray);
+
+    if (nextToken == NULL || nextToken->type != LPARENTHESIS) {
+        fprintf(stderr, "Expected '(' after function name, got '%s'\n", nextToken->lexeme);
+        exit(EXIT_FAILURE);
+    }
+
+    nextToken = next(tokenArray);
+
+    if (nextToken == NULL || nextToken->type != RPARENTHESIS) {
+        fprintf(stderr, "Expected ')' after function parameters, got '%s'\n", nextToken->lexeme);
+        exit(EXIT_FAILURE);
+    }
+
+    nextToken = next(tokenArray);
+
+    if (nextToken == NULL || nextToken->type != LBRACE) {
+        fprintf(stderr, "Expected '{' after function declaration, got '%s'\n", nextToken->lexeme);
+        exit(EXIT_FAILURE);
+    }
+
+    ASTNode *statement = parse_statement(tokenArray);
+
+    if (statement == NULL) {
+        fprintf(stderr, "Expected a statement inside function body\n");
+        exit(EXIT_FAILURE);
+    }
+
+    if (nextToken == NULL || nextToken->type != RBRACE) {
+        fprintf(stderr, "Expected '}' at the end of function body, got '%s'\n", nextToken->lexeme);
+        exit(EXIT_FAILURE);
+    }
+
+    funcNode->data.funcDeclareNode.statement = statement;
+
+    return funcNode;
 }

@@ -6,6 +6,6 @@
 
 Token getNextToken(FILE *file);
 void tokenize(FILE *file, TokenArray *tokenArray);
-char peek(FILE *file);
+//char peekch(FILE *file); // should only be avaliable in the lexer
 
 #endif

@@ -1,11 +1,12 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include "tokens.h"
 #include "lexer.h"
 
-char peek(FILE* file) {
+char peekch(FILE* file) {
     char chr = fgetc(file);
     ungetc(chr, file);
 
@@ -74,15 +75,15 @@ Token getNextToken(FILE* file) {
 
 void tokenize(FILE *file, TokenArray *tokenArray) {
     Token token;
-    tokenArray->count = 0;
+    tokenArray->size = 0;
 
     while ((token = getNextToken(file)).type != TOKEN_EOF) {
         if (token.type != UNKNOWN) {
-            if (tokenArray->count < MAX_TOKENS) {
-                tokenArray->tokens[tokenArray->count++] = token;
+            if (tokenArray->size < MAX_TOKENS) {
+                tokenArray->tokens[tokenArray->size++] = token;
             } else {
-                puts("ERROR: Too many tokens!");
-                break;
+                fprintf(stderr, "ERROR: Too many tokens!\n");
+                exit(1);
             }
         }
     }

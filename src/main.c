@@ -25,8 +25,7 @@ int main() {
 
     ASTNode *program = parse(&tokenArray);
 
-    printAST(program, 0);
-
+    printAST(program);
 
     return 0;
 }

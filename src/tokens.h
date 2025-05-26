@@ -25,7 +25,7 @@ typedef struct {
 
 typedef struct{
     Token tokens[MAX_TOKENS];
-    int count;
+    int size;
 } TokenArray;
 
 #endif
