@@ -129,9 +129,28 @@ ASTNode *parse(TokenArray *tokenArray) {
         return NULL;
     }
 
-    // assuming the first few tokens are function declarations
+    ASTNode *ast = createProgNode(NULL); // Create an empty program node
 
-    ASTNode *ast = parse_func(tokenArray);
+    if (ast == NULL) {
+        fprintf(stderr, "Error: Failed to create AST root node\n");
+        return NULL;
+    }
+
+    // assume anything that isn't inside a function and starts with a keyword is a function declaration
+    tokenArray->index = 0; // Reset index to start parsing from the beginning
+
+    for (int i = 0; i < tokenArray->size; i++) {
+        if (tokenArray->tokens[i].type == KEYWORD && strcmp(tokenArray->tokens[i].lexeme, "int") == 0) {
+            // Found a function declaration
+            ASTNode *funcNode = parse_func(tokenArray);
+            if (funcNode == NULL) {
+                fprintf(stderr, "Error parsing function declaration\n");
+                return NULL;
+            }
+            // Add the function node to the AST
+            ast->data.progNode.func_declare = funcNode;
+        }
+    }
 
     return ast;
 }
