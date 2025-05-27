@@ -45,6 +45,16 @@ ASTNode *createReturnNode(ASTNode *expression) {
 
     return node;
 }
+ASTNode *createStatementNode(ASTNode *statement) {
+    ASTNode *node = (ASTNode *) malloc(sizeof(ASTNode));
+    if (node == NULL) {
+        return NULL;
+    }
+    node->type = NODE_STATEMENT;
+    node->data.statementNode.statement = statement;
+
+    return node;
+}
 ASTNode *createFuncDeclareNode(const char *name, ASTNode *statement) {
     ASTNode *node = (ASTNode *) malloc(sizeof(ASTNode));
     if (node == NULL) {
@@ -127,6 +137,11 @@ void printAST_(ASTNode *node, int level) {
         case NODE_RETURN:
             printf("RETURN:\n");
             printAST_(node->data.returnNode.expression, level + 1);
+            break;
+        
+        case NODE_STATEMENT:
+            printf("STATEMENT:\n");
+            printAST_(node->data.statementNode.statement, level + 1);
             break;
 
         case NODE_FUNC_DECLARE:

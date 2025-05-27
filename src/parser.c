@@ -23,6 +23,10 @@ Token *peekToken(TokenArray *tokenArray) {
 
 ASTNode *parse(TokenArray *tokenArray) {
     Token *token;
+
+
+    fprintf(stderr, "ERORR: parse function not implemented yet\n");
+    return NULL;
 }
 
 ASTNode *parse_statement(TokenArray *tokenArray) {

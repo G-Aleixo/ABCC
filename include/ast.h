@@ -33,6 +33,10 @@ typedef struct {
 } ASTReturn;
 
 typedef struct {
+    ASTNode *statement;
+} ASTStatement;
+
+typedef struct {
     char name[MAX_LEXEME_LENGTH];
     ASTNode *statement;
 } ASTFuncDeclare;
@@ -47,6 +51,7 @@ struct ASTNode{
         ASTConst constNode;
         ASTExp expNode;
         ASTReturn returnNode;
+        ASTStatement statementNode;
         ASTFuncDeclare funcDeclareNode;
         ASTProg progNode;
     } data;
@@ -56,6 +61,7 @@ struct ASTNode{
 ASTNode *createConstNode(char* value, ASTConstType type);
 ASTNode *createExpNode(ASTNode *value);
 ASTNode *createReturnNode(ASTNode *expression);
+ASTNode *createStatementNode(ASTNode *statement);
 ASTNode *createFuncDeclareNode(const char *name, ASTNode *statement);
 ASTNode *createProgNode(ASTNode *funcDeclare);
 

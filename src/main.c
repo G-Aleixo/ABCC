@@ -12,7 +12,7 @@ void printToken(Token token) {
 }
 
 int main() {
-    FILE* file = fopen("test.c", "r");
+    FILE* file = fopen("test.abcc", "r");
 
     if (file == NULL) {
         puts("The file could not be oppened");
