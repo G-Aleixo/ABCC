@@ -11,8 +11,15 @@ void printToken(Token token) {
     printf("Lexeme: %-10s Type: %d\n", token.lexeme, token.type);
 }
 
-int main() {
-    FILE* file = fopen("test.abcc", "r");
+int main(int argc, char* argv[]) {
+
+    // check if the file is given
+    if (argc < 2) {
+        puts("Please provide a file to compile.");
+        return 1;
+    }
+
+    FILE* file = fopen(argv[1], "r");
 
     if (file == NULL) {
         puts("The file could not be oppened");

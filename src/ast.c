@@ -20,7 +20,7 @@ ASTNode *createConstNode(char* value, ASTConstType type) {
         return NULL;
     }
 
-    strcmp(node->data.constNode.value, value);
+    strcat(node->data.constNode.value, value);
 
     return node;
 }
@@ -84,13 +84,16 @@ void freeAST(ASTNode *node) {
 
     switch (node->type) {
         case NODE_CONSTANT:
-            // No additional data to free
+            free(node->data.constNode.value);
             break;
         case NODE_EXPRESSION:
             freeAST(node->data.expNode.expression);
             break;
         case NODE_RETURN:
             freeAST(node->data.returnNode.expression);
+            break;
+        case NODE_STATEMENT:
+            freeAST(node->data.statementNode.statement);
             break;
         case NODE_FUNC_DECLARE:
             freeAST(node->data.funcDeclareNode.statement);
