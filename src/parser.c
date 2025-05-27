@@ -23,6 +23,7 @@ Token *peekToken(TokenArray *tokenArray) {
 ASTNode *parse_statement(TokenArray *tokenArray) {
     Token *token = next(tokenArray);
     if (token == NULL) {
+        fprintf(stderr, "Error: No tokens available for parsing statement\n");
         return NULL; // No more tokens
     };
 
@@ -44,11 +45,14 @@ ASTNode *parse_statement(TokenArray *tokenArray) {
                 }
                 ASTNode *expression = createExpNode(createConstNode(nextToken->lexeme, CONST_NUMBER));
                 node = createReturnNode(expression);
+            } else {
+                fprintf(stderr, "Expected a return value after 'return', got '%s'\n", nextToken ? nextToken->lexeme : "EOF");
+                exit(EXIT_FAILURE);
             }
             break;
         
         default:
-            fprintf(stderr, "Unexpected token type: %d\n", token->type);
+            fprintf(stderr, "Unexpected token: %s\n", token->lexeme);
             exit(EXIT_FAILURE);
     }
 

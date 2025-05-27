@@ -6,6 +6,7 @@
 #include "lexer.h"
 #include "parser.h"
 #include "ast.h"
+#include "code_gen.h"
 
 void printToken(Token token) {
     printf("Lexeme: %-10s Type: %d\n", token.lexeme, token.type);
@@ -37,6 +38,15 @@ int main(int argc, char* argv[]) {
     ASTNode *program = parse(&tokenArray);
 
     printAST(program);
+
+    FILE* outputFile = fopen("output.txt", "w");
+
+    if (outputFile == NULL) {
+        puts("Could not open output file.");
+        return 1;
+    }
+
+    generate_code(program, outputFile);
 
     return 0;
 }
