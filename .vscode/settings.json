@@ -1,5 +1,9 @@
 {
     "files.associations": {
         "tokens.h": "c"
-    }
+    },
+    "github.copilot.enable": {
+        "*": false
+    },
+    "makefile.configureOnOpen": true
 }
