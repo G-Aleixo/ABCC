@@ -5,29 +5,20 @@
 #include "tokens.h"
 #include "ast.h"
 
-int arrayIndex = 0;
-
 Token *next(TokenArray *tokenArray) {
-    if (arrayIndex < tokenArray->size) {
-        return &tokenArray->tokens[arrayIndex++];
+    if (tokenArray->index < tokenArray->size) {
+        return &tokenArray->tokens[tokenArray->index++];
     }
     return NULL; // No more tokens
 }
 
 Token *peekToken(TokenArray *tokenArray) {
-    if (arrayIndex < tokenArray->size) {
-        return &tokenArray->tokens[arrayIndex];
+    if (tokenArray->index < tokenArray->size) {
+        return &tokenArray->tokens[tokenArray->index];
     }
     return NULL; // No more tokens
 }
 
-ASTNode *parse(TokenArray *tokenArray) {
-    Token *token;
-
-
-    fprintf(stderr, "ERORR: parse function not implemented yet\n");
-    return NULL;
-}
 
 ASTNode *parse_statement(TokenArray *tokenArray) {
     Token *token = next(tokenArray);
@@ -46,6 +37,11 @@ ASTNode *parse_statement(TokenArray *tokenArray) {
             Token *nextToken = peekToken(tokenArray);
             if (nextToken != NULL && nextToken->type == NUMBER) {
                 next(tokenArray);
+                token = next(tokenArray);
+                if (token == NULL || token->type != SEMICOLON) {
+                    fprintf(stderr, "Expected ';' after return value, got '%s'\n", token->lexeme);
+                    exit(EXIT_FAILURE);
+                }
                 ASTNode *expression = createExpNode(createConstNode(nextToken->lexeme, CONST_NUMBER));
                 node = createReturnNode(expression);
             }
@@ -78,7 +74,8 @@ ASTNode *parse_func(TokenArray *tokenArray) {
     }
 
     if (peekToken(tokenArray) == NULL || peekToken(tokenArray)->type != IDENTIFIER) {
-        fprintf(stderr, "Expected function name after 'int', got '%s'\n", token->lexeme);
+        printf("TOKEN TYPE: %d\n", peekToken(tokenArray)->type);
+        fprintf(stderr, "Expected function name after 'int', got '%s'\n", peekToken(tokenArray)->lexeme);
         exit(EXIT_FAILURE);
     }
 
@@ -114,6 +111,8 @@ ASTNode *parse_func(TokenArray *tokenArray) {
         exit(EXIT_FAILURE);
     }
 
+    nextToken = next(tokenArray);
+
     if (nextToken == NULL || nextToken->type != RBRACE) {
         fprintf(stderr, "Expected '}' at the end of function body, got '%s'\n", nextToken->lexeme);
         exit(EXIT_FAILURE);
@@ -122,4 +121,17 @@ ASTNode *parse_func(TokenArray *tokenArray) {
     funcNode->data.funcDeclareNode.statement = statement;
 
     return funcNode;
+}
+
+ASTNode *parse(TokenArray *tokenArray) {
+    if (tokenArray == NULL || tokenArray->size == 0) {
+        fprintf(stderr, "Error: Token array is empty or NULL\n");
+        return NULL;
+    }
+
+    // assuming the first few tokens are function declarations
+
+    ASTNode *ast = parse_func(tokenArray);
+
+    return ast;
 }

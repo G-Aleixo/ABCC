@@ -7,7 +7,6 @@
 typedef enum {
     KEYWORD,
     IDENTIFIER,
-    MAIN, // special cuz main
     LPARENTHESIS,
     RPARENTHESIS,
     LBRACE,
@@ -26,6 +25,7 @@ typedef struct {
 typedef struct{
     Token tokens[MAX_TOKENS];
     int size;
+    int index; // current index for iteration
 } TokenArray;
 
 #endif

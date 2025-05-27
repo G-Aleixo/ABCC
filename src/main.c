@@ -30,6 +30,10 @@ int main(int argc, char* argv[]) {
     TokenArray tokenArray;
     tokenize(file, &tokenArray);
 
+    for (int i = 0; i < tokenArray.size; i++) {
+        printToken(tokenArray.tokens[i]);
+    }
+
     ASTNode *program = parse(&tokenArray);
 
     printAST(program);

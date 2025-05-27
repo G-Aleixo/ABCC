@@ -39,8 +39,6 @@ Token getNextToken(FILE* file) {
         if (strcmp(token.lexeme, "int") == 0 ||
             strcmp(token.lexeme, "return") == 0) {
             token.type = KEYWORD;
-        } else if (strcmp(token.lexeme, "main") == 0) {
-            token.type = MAIN;
         } else {
             // doesn't fit any special identifiers
             token.type = IDENTIFIER;
@@ -76,6 +74,7 @@ Token getNextToken(FILE* file) {
 void tokenize(FILE *file, TokenArray *tokenArray) {
     Token token;
     tokenArray->size = 0;
+    tokenArray->index = 0;
 
     while ((token = getNextToken(file)).type != TOKEN_EOF) {
         if (token.type != UNKNOWN) {
