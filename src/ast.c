@@ -92,9 +92,61 @@ void freeAST(ASTNode *node) {
 
     free(node);
 }
-void printAST(ASTNode *node) {
-    fprintf(stderr, "ERROR: printAST not implemented\n");
-}
-void printAST_(ASTNode *node, int level) {
 
+
+void print_tabs(int level) {
+    for (int i = 0; i < level; i++) {
+        printf("\t");
+    }
+}
+
+void printAST_(ASTNode *node, int level) {
+    if (node == NULL) {
+        print_tabs(level);
+        printf("NULL NODE\n");
+        return;
+    }
+
+    print_tabs(level);
+    switch (node->type){
+        case NODE_CONSTANT:
+            if (node->data.constNode.type == CONST_NUMBER) {
+                printf("NUMBER: %s\n", node->data.constNode.value);
+            } else if (node->data.constNode.type == CONST_STRING) {
+                printf("STRING: %s\n", node->data.constNode.value);
+            } else {
+                printf("UNKNOWN NODE: %s\n", node->data.constNode.value);
+            }
+            break;
+
+        case NODE_EXPRESSION:
+            printf("EXPRESSION:\n");
+            printAST_(node->data.expNode.expression, level + 1);
+            break;
+        
+        case NODE_RETURN:
+            printf("RETURN:\n");
+            printAST_(node->data.returnNode.expression, level + 1);
+            break;
+
+        case NODE_FUNC_DECLARE:
+            printf("FUNCTION DECLARE: %s\n", node->data.funcDeclareNode.name);
+            printAST_(node->data.funcDeclareNode.statement, level + 1);
+            break;
+
+        case NODE_PROGRAM:
+            printf("PROGRAM:\n");
+            printAST_(node->data.progNode.func_declare, level + 1);
+            break;
+        default:
+            break;
+    }
+}
+
+void printAST(ASTNode *node) {
+    if (node == NULL) {
+        printf("AST is empty.\n");
+        return;
+    }
+    printAST_(node, 0);
 }
