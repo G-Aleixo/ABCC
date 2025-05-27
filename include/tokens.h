@@ -11,7 +11,7 @@ typedef enum {
     RPARENTHESIS,
     LBRACE,
     RBRACE,
-    NUMBER,
+    NUMBER_INT,
     SEMICOLON,
     TOKEN_EOF,
     UNKNOWN
@@ -25,7 +25,7 @@ typedef struct {
 typedef struct{
     Token tokens[MAX_TOKENS];
     int size;
-    int index; // current index for iteration
+    int index; // holds index for token that will be read by next
 } TokenArray;
 
 #endif

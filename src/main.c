@@ -32,10 +32,13 @@ int main(int argc, char* argv[]) {
     tokenize(file, &tokenArray);
 
     for (int i = 0; i < tokenArray.size; i++) {
-        printToken(tokenArray.tokens[i]);
+        printToken(tokenArray.tokens[i]); //
     }
 
     ASTNode *program = parse(&tokenArray);
+
+    // file is no longer needed
+    fclose(file);
 
     printAST(program);
 
@@ -47,6 +50,8 @@ int main(int argc, char* argv[]) {
     }
 
     generate_code(program, outputFile);
+
+    fclose(outputFile);
 
     return 0;
 }

@@ -51,7 +51,7 @@ Token getNextToken(FILE* file) {
         } ungetc(chr, file); // put back final non digit character
 
         token.lexeme[pos] = '\0';
-        token.type = NUMBER;
+        token.type = NUMBER_INT;
     } else {
         // should be punctuation
         //TODO: add checks later

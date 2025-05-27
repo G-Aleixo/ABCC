@@ -19,6 +19,32 @@ Token *peekToken(TokenArray *tokenArray) {
     return NULL; // No more tokens
 }
 
+ASTNode *parse_expression(TokenArray *tokenArray) {
+    Token *token = next(tokenArray);
+    if (token == NULL) {
+        fprintf(stderr, "Error: no tokens avaliable for parsing expression");
+    }
+
+    ASTNode *node = NULL;
+
+    switch (token->type) {
+        case NUMBER_INT:
+            //TODO: implement the below part later
+            // nextToken = peekToken(tokenArray);
+            // then check if is operator
+            // should check until we reach a semicolon or a closing parenthesis
+            // planning for a recursive function, like when hitting ( call function again
+
+            // for now just support const number expression
+            node = createExpNode(createConstNode(token->lexeme, CONST_NUMBER));
+            break;
+        default:
+            fprintf(stderr, "Unexpected token in expression: \"%s\"\n", token->lexeme);
+            exit(EXIT_FAILURE);
+    }
+
+    return node;
+}
 
 ASTNode *parse_statement(TokenArray *tokenArray) {
     Token *token = next(tokenArray);
@@ -36,19 +62,21 @@ ASTNode *parse_statement(TokenArray *tokenArray) {
                 exit(EXIT_FAILURE);
             }
             Token *nextToken = peekToken(tokenArray);
-            if (nextToken != NULL && nextToken->type == NUMBER) {
-                next(tokenArray);
-                token = next(tokenArray);
-                if (token == NULL || token->type != SEMICOLON) {
-                    fprintf(stderr, "Expected ';' after return value, got '%s'\n", token->lexeme);
-                    exit(EXIT_FAILURE);
-                }
-                ASTNode *expression = createExpNode(createConstNode(nextToken->lexeme, CONST_NUMBER));
-                node = createReturnNode(expression);
-            } else {
-                fprintf(stderr, "Expected a return value after 'return', got '%s'\n", nextToken ? nextToken->lexeme : "EOF");
+            
+            ASTNode *expression = parse_expression(tokenArray);
+            if (expression == NULL) {
+                fprintf(stderr, "Expected a return value after 'return', got %s\n", expression ? expression->data.expNode.expression->data.constNode.value : "NULL");
                 exit(EXIT_FAILURE);
             }
+
+            // Check if the next token is a semicolon
+            nextToken = next(tokenArray);
+            if (nextToken == NULL || nextToken->type != SEMICOLON) {
+                fprintf(stderr, "Expected ';' after return statement, got '%s'\n", nextToken ? nextToken->lexeme : "EOF");
+                exit(EXIT_FAILURE);
+            }
+
+            node = createReturnNode(expression);
             break;
         
         default:

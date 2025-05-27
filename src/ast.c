@@ -124,7 +124,7 @@ void printAST_(ASTNode *node, int level) {
     switch (node->type){
         case NODE_CONSTANT:
             if (node->data.constNode.type == CONST_NUMBER) {
-                printf("NUMBER: %s\n", node->data.constNode.value);
+                printf("NUMBER_INT: %s\n", node->data.constNode.value);
             } else if (node->data.constNode.type == CONST_STRING) {
                 printf("STRING: %s\n", node->data.constNode.value);
             } else {
