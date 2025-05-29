@@ -3,7 +3,8 @@
 
 #include <ast.h>
 #include <stdio.h>
+#include <stdlib.h>
 
-int generate_code(ASTNode *ast, FILE *output_file);
+int generate(ASTNode *ast, FILE *output_file);
 
 #endif

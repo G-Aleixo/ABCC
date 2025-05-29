@@ -42,14 +42,14 @@ int main(int argc, char* argv[]) {
 
     printAST(program);
 
-    FILE* outputFile = fopen("output.txt", "w");
+    FILE* outputFile = fopen("output.s", "w");
 
     if (outputFile == NULL) {
         puts("Could not open output file.");
         return 1;
     }
 
-    generate_code(program, outputFile);
+    generate(program, outputFile);
 
     fclose(outputFile);
 
