@@ -35,6 +35,17 @@ ASTNode *createExpNode(ASTNode *value) {
 
     return node;
 }
+ASTNode *createUnaryOpNode(char operator, ASTNode *expression) {
+    ASTNode *node = (ASTNode *) malloc(sizeof(ASTNode));
+    if (node == NULL) {
+        return NULL;
+    }
+    node->type = NODE_UNARY_OP;
+    node->data.unaryOpNode.operator = operator;
+    node->data.unaryOpNode.expression = expression;
+
+    return node;
+}
 ASTNode *createReturnNode(ASTNode *expression) {
     ASTNode *node = (ASTNode *) malloc(sizeof(ASTNode));
     if (node == NULL) {
@@ -89,6 +100,9 @@ void freeAST(ASTNode *node) {
         case NODE_EXPRESSION:
             freeAST(node->data.expNode.expression);
             break;
+        case NODE_UNARY_OP:
+            freeAST(node->data.unaryOpNode.expression);
+            break;
         case NODE_RETURN:
             freeAST(node->data.returnNode.expression);
             break;
@@ -130,6 +144,11 @@ void printAST_(ASTNode *node, int level) {
             } else {
                 printf("UNKNOWN NODE: %s\n", node->data.constNode.value);
             }
+            break;
+        
+        case NODE_UNARY_OP:
+            printf("UNARY OP: %c\n", node->data.unaryOpNode.operator);
+            printAST_(node->data.unaryOpNode.expression, level + 1);
             break;
 
         case NODE_EXPRESSION:

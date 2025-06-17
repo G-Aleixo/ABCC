@@ -19,7 +19,16 @@ Token *peekToken(TokenArray *tokenArray) {
     return NULL; // No more tokens
 }
 
-ASTNode *parse_expression(TokenArray *tokenArray) {
+char toUnaryOp(Token *token) {
+    switch (token->type) {
+    case NEGATION: return '-'; break;
+    case BITWISE_COMPLEMENT: return '~'; break;
+    case LOGICAL_NEGATION: return '!'; break;
+    default: return 0; break;
+    }
+}
+
+ASTNode *_parse_expression(TokenArray *tokenArray) {
     Token *token = next(tokenArray);
     if (token == NULL) {
         fprintf(stderr, "Error: no tokens avaliable for parsing expression");
@@ -36,14 +45,36 @@ ASTNode *parse_expression(TokenArray *tokenArray) {
             // planning for a recursive function, like when hitting ( call function again
 
             // for now just support const number expression
-            node = createExpNode(createConstNode(token->lexeme, CONST_NUMBER));
+            node = createConstNode(token->lexeme, CONST_NUMBER);
             break;
         default:
+            // Handle unary operators
+            if (token->type == NEGATION ||
+                token->type == BITWISE_COMPLEMENT ||
+                token->type == LOGICAL_NEGATION) {
+                char op = toUnaryOp(token);
+
+                if (op == 0) {
+                    fprintf(stderr, "Expected unary operator, got '%s'\n", token->lexeme);
+                    exit(EXIT_FAILURE);
+                }
+
+                ASTNode *expression = _parse_expression(tokenArray);
+
+                node = createUnaryOpNode(op, expression);
+                break;
+            }
             fprintf(stderr, "Unexpected token in expression: \"%s\"\n", token->lexeme);
             exit(EXIT_FAILURE);
     }
 
     return node;
+}
+
+ASTNode *parse_expression(TokenArray *tokenArray) {
+    ASTNode *node = _parse_expression(tokenArray);
+
+    return createExpNode(node);
 }
 
 ASTNode *parse_statement(TokenArray *tokenArray) {

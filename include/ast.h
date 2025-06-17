@@ -11,6 +11,7 @@ typedef enum {
     NODE_STATEMENT,
     NODE_RETURN,
     NODE_EXPRESSION,
+    NODE_UNARY_OP,
     NODE_CONSTANT,
 } ASTNodeType;
 
@@ -23,6 +24,11 @@ typedef struct {
     ASTConstType type;
     char* value; // Points to string or value idk
 } ASTConst;
+
+typedef struct {
+    ASTNode *expression;
+    char operator; // single char denoting unary operator
+} ASTUnaryOp;
 
 typedef struct {
     ASTNode *expression;
@@ -50,6 +56,7 @@ struct ASTNode{
     union {
         ASTConst constNode;
         ASTExp expNode;
+        ASTUnaryOp unaryOpNode;
         ASTReturn returnNode;
         ASTStatement statementNode;
         ASTFuncDeclare funcDeclareNode;
@@ -60,6 +67,7 @@ struct ASTNode{
 
 ASTNode *createConstNode(char* value, ASTConstType type);
 ASTNode *createExpNode(ASTNode *value);
+ASTNode *createUnaryOpNode(char operator, ASTNode *expression);
 ASTNode *createReturnNode(ASTNode *expression);
 ASTNode *createStatementNode(ASTNode *statement);
 ASTNode *createFuncDeclareNode(const char *name, ASTNode *statement);

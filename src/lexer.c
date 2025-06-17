@@ -64,6 +64,9 @@ Token getNextToken(FILE* file) {
             case '{': token.type = LBRACE; break;
             case '}': token.type = RBRACE; break;
             case ';': token.type = SEMICOLON; break;
+            case '-': token.type = NEGATION; break;
+            case '~': token.type = BITWISE_COMPLEMENT; break;
+            case '!': token.type = LOGICAL_NEGATION; break;
             default: token.type = UNKNOWN;
         }
     }

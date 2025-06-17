@@ -14,7 +14,10 @@ typedef enum {
     NUMBER_INT,
     SEMICOLON,
     TOKEN_EOF,
-    UNKNOWN
+    UNKNOWN,
+    NEGATION,
+    BITWISE_COMPLEMENT,
+    LOGICAL_NEGATION
 } TokenType;
 
 typedef struct {
